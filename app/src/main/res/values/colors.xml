@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="merah">#D32F2F</color>
+    <color name="oranye">#FB8C00</color>
+    <color name="oranye2">#F4511E</color>
+    <color name="oranye3">#FF8A65</color>
+    <color name="biru">#1E88E5</color>
+    <color name="biru2">#42A5F5</color>
+    <color name="hijau">#2E7D32</color>
+    <color name="hijau_a">#43A047</color>
+    <color name="hijau_b">#66BB6A</color>
+    <color name="ungu">#8E24AA</color>
+    <color name="ungu2">#AB47BC</color>
+    <color name="latar">#FFF8F0</color>
+    <color name="teks">#263238</color>
+    <color name="abu">#78909C</color>
+    <color name="pink">#EC407A</color>
+</resources>

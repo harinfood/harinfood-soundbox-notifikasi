@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F7F4FB">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pengaturan Notifikasi"
+        android:textColor="#263238"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp"
+        android:padding="16dp"
+        android:background="@drawable/bg_kartu"
+        android:elevation="4dp">
+
+        <Switch
+            android:id="@+id/swBacaNama"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sebutkan nama aplikasi"
+            android:textColor="#263238"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contoh: Pembayaran sebesar dua ribu rupiah diterima, dari ShopeePay"
+            android:textColor="#78909C"
+            android:textSize="12sp" />
+
+        <Switch
+            android:id="@+id/swBacaLainnya"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="Bacakan notifikasi selain pembayaran"
+            android:textColor="#263238"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Jika mati, hanya notifikasi yang berisi nominal Rp yang dibacakan."
+            android:textColor="#78909C"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:background="@drawable/bg_kartu"
+        android:elevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blokir kata"
+            android:textColor="#263238"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Notifikasi yang memuat salah satu kata di bawah tidak akan dibacakan."
+            android:textColor="#78909C"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <EditText
+                android:id="@+id/edtKataBlokir"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/bg_cari"
+                android:hint="Tulis kata, contoh: promo"
+                android:inputType="text"
+                android:padding="12dp"
+                android:singleLine="true"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btnTambahKata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Tambah" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtJumlahKata"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="#78909C"
+            android:textSize="12sp" />
+
+        <ListView
+            android:id="@+id/listKataBlokir"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:divider="#E0E0E0"
+            android:dividerHeight="1dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnKembaliNotif"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:text="Kembali"
+        android:textSize="15sp" />
+</LinearLayout>
