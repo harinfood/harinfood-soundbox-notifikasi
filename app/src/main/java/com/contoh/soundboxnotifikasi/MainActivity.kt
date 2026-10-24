@@ -13,7 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ListView
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 
@@ -31,7 +31,7 @@ class MainActivity : Activity() {
     private lateinit var panelAplikasi: LinearLayout
     private lateinit var imgPanah: ImageView
     private lateinit var cariAplikasi: EditText
-    private lateinit var listAplikasi: ListView
+    private lateinit var listAplikasi: ScrollView
     private lateinit var adapter: AplikasiAdapter
 
     private val dipilih = mutableSetOf<String>()
@@ -140,7 +140,7 @@ class MainActivity : Activity() {
 
         dipilih.addAll(Pengaturan.paketDipantau(this))
         adapter = AplikasiAdapter(this, daftar, dipilih) { simpanPilihan() }
-        listAplikasi.adapter = adapter
+        adapter.attach(findViewById<android.widget.LinearLayout>(R.id.containerAplikasi))
         perbaruiRingkasan()
     }
 
@@ -151,7 +151,7 @@ class MainActivity : Activity() {
 
     private fun perbaruiRingkasan() {
         txtRingkasan.text = if (dipilih.isEmpty()) {
-            "Semua aplikasi dipantau"
+            "Belum ada aplikasi dipilih. Tidak ada notifikasi yang dibacakan."
         } else {
             "${dipilih.size} aplikasi dipilih"
         }

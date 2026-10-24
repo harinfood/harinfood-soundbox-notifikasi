@@ -28,8 +28,9 @@ class PaymentNotificationListener : NotificationListenerService() {
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
+        // Hanya aplikasi yang dipilih yang dibacakan. Jika belum ada yang dipilih, tidak ada yang dibacakan.
         val dipantau = Pengaturan.paketDipantau(this)
-        if (dipantau.isNotEmpty() && sbn.packageName !in dipantau) return
+        if (sbn.packageName !in dipantau) return
 
         val extras = sbn.notification.extras
         val judul = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty().trim()
