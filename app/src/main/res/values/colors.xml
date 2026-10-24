@@ -15,4 +15,6 @@
     <color name="teks">#263238</color>
     <color name="abu">#78909C</color>
     <color name="pink">#EC407A</color>
+    <color name="splash_bg">#0B1020</color>
+    <color name="oranye_terang">#FFB74D</color>
 </resources>

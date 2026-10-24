@@ -3,6 +3,7 @@ package com.contoh.soundboxnotifikasi
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.RippleDrawable
 import android.view.Gravity
 import android.view.View
@@ -22,13 +23,29 @@ class AplikasiAdapter(
     private val onBerubah: () -> Unit
 ) : BaseAdapter() {
 
-    private var tampil: List<AplikasiItem> = semua
+    private var kataSaring = ""
+    private var tampil: List<AplikasiItem> = susun(semua)
     private val pm = context.packageManager
 
-    fun saring(kata: String) {
-        val kunci = kata.trim().lowercase()
-        tampil = if (kunci.isEmpty()) semua else semua.filter { it.label.lowercase().contains(kunci) }
+    /** Aplikasi yang dipilih selalu di urutan paling atas, sisanya urut nama. */
+    private fun susun(daftar: List<AplikasiItem>): List<AplikasiItem> =
+        daftar.sortedWith(
+            compareByDescending<AplikasiItem> { it.paket in dipilih }.thenBy { it.label.lowercase() }
+        )
+
+    private fun perbarui() {
+        val sumber = if (kataSaring.isEmpty()) {
+            semua
+        } else {
+            semua.filter { it.label.lowercase().contains(kataSaring) }
+        }
+        tampil = susun(sumber)
         notifyDataSetChanged()
+    }
+
+    fun saring(kata: String) {
+        kataSaring = kata.trim().lowercase()
+        perbarui()
     }
 
     override fun getCount(): Int = tampil.size
@@ -40,12 +57,14 @@ class AplikasiAdapter(
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val ctx = parent?.context ?: context
         val item = tampil[position]
+        val terpilih = item.paket in dipilih
 
         val baris = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             setPadding(ctx.dp(16), ctx.dp(10), ctx.dp(16), ctx.dp(10))
-            background = RippleDrawable(ColorStateList.valueOf(0x33FB8C00), null, null)
+            val alas = if (terpilih) ColorDrawable(Color.parseColor("#FFF3E0")) else null
+            background = RippleDrawable(ColorStateList.valueOf(0x33FB8C00), alas, null)
         }
 
         val ikon = ImageView(ctx).apply {
@@ -63,7 +82,7 @@ class AplikasiAdapter(
         }
 
         val cek = CheckBox(ctx).apply {
-            isChecked = item.paket in dipilih
+            isChecked = terpilih
             isClickable = false
             isFocusable = false
             buttonTintList = ColorStateList.valueOf(Color.parseColor("#FB8C00"))
@@ -74,10 +93,9 @@ class AplikasiAdapter(
         baris.addView(cek)
 
         baris.setOnClickListener {
-            val sebelumnya = item.paket in dipilih
-            if (sebelumnya) dipilih.remove(item.paket) else dipilih.add(item.paket)
-            cek.isChecked = !sebelumnya
+            if (item.paket in dipilih) dipilih.remove(item.paket) else dipilih.add(item.paket)
             onBerubah()
+            perbarui() // aplikasi yang baru dipilih langsung naik ke atas
         }
         efekTekan(baris)
 

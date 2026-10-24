@@ -32,7 +32,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Harinfood Soundbox Notifikasi"
+                android:text="Soundbox Notification"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notifikasi pembayaran otomatis"
+                android:text="notifikasi aplikasi by Harinfood"
                 android:textColor="#E6FFFFFF"
                 android:textSize="13sp" />
         </LinearLayout>
@@ -278,7 +278,7 @@
                     <ListView
                         android:id="@+id/listAplikasi"
                         android:layout_width="match_parent"
-                        android:layout_height="360dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:divider="#E0E0E0"
                         android:dividerHeight="1dp" />
