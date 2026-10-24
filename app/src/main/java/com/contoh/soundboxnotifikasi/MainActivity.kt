@@ -13,7 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.ScrollView
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 
@@ -31,7 +31,7 @@ class MainActivity : Activity() {
     private lateinit var panelAplikasi: LinearLayout
     private lateinit var imgPanah: ImageView
     private lateinit var cariAplikasi: EditText
-    private lateinit var listAplikasi: ScrollView
+    private lateinit var listAplikasi: ListView
     private lateinit var adapter: AplikasiAdapter
 
     private val dipilih = mutableSetOf<String>()
@@ -140,8 +140,24 @@ class MainActivity : Activity() {
 
         dipilih.addAll(Pengaturan.paketDipantau(this))
         adapter = AplikasiAdapter(this, daftar, dipilih) { simpanPilihan() }
-        adapter.attach(findViewById<android.widget.LinearLayout>(R.id.containerAplikasi))
+        listAplikasi.adapter = adapter
+        setupDaftarAplikasi()
         perbaruiRingkasan()
+    }
+
+    /** Daftar aplikasi: bisa digeser, dan tombol naik/turun menggeser dengan halus. */
+    private fun setupDaftarAplikasi() {
+        // Gesekan di dalam daftar tidak ikut menggeser halaman utama
+        listAplikasi.setOnTouchListener { v, _ ->
+            v.parent?.requestDisallowInterceptTouchEvent(true)
+            false
+        }
+        findViewById<ImageView>(R.id.btnNaikAplikasi).setOnClickListener {
+            listAplikasi.smoothScrollBy(-dp(320), 350)
+        }
+        findViewById<ImageView>(R.id.btnTurunAplikasi).setOnClickListener {
+            listAplikasi.smoothScrollBy(dp(320), 350)
+        }
     }
 
     private fun simpanPilihan() {

@@ -275,19 +275,50 @@
                         android:paddingTop="12dp"
                         android:paddingBottom="12dp" />
 
-                    <ScrollView
-                        android:id="@+id/listAplikasi"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="420dp"
                         android:layout_marginTop="10dp"
                         android:background="#FFFFFF">
 
-                        <LinearLayout
-                            android:id="@+id/containerAplikasi"
+                        <ListView
+                            android:id="@+id/listAplikasi"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
-                    </ScrollView>
+                            android:layout_height="match_parent"
+                            android:divider="#E0E0E0"
+                            android:dividerHeight="1dp"
+                            android:scrollbars="vertical"
+                            android:scrollbarStyle="insideOverlay"
+                            android:fastScrollEnabled="true"
+                            android:fastScrollAlwaysVisible="true" />
+
+                        <ImageView
+                            android:id="@+id/btnNaikAplikasi"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="top|end"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/bg_tombol_bulat"
+                            android:padding="8dp"
+                            android:rotation="180"
+                            android:src="@drawable/ic_chevron_bawah"
+                            android:tint="#FB8C00"
+                            android:contentDescription="Naik" />
+
+                        <ImageView
+                            android:id="@+id/btnTurunAplikasi"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginBottom="6dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/bg_tombol_bulat"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_chevron_bawah"
+                            android:tint="#FB8C00"
+                            android:contentDescription="Turun" />
+                    </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
