@@ -73,7 +73,10 @@ class AmountSpeaker(private val context: Context) {
         }
     }
 
-    fun ucapkan(kata: String) {
+    fun ucapkan(kata: String) = ucapkan(kata, null)
+
+    /** berkasKhusus = MP3 milik aplikasi pengirim (jika ada). Tanpa itu, memakai MP3 umum / nada HP. */
+    fun ucapkan(kata: String, berkasKhusus: java.io.File?) {
         handler.post {
             prosesAktif++
             if (volumeAsli < 0) {
@@ -84,11 +87,17 @@ class AmountSpeaker(private val context: Context) {
                 audio.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION),
                 0
             )
-            mainkanSuara { bicara(kata) }
+            mainkanSuara(berkasKhusus) { bicara(kata) }
         }
     }
 
-    private fun mainkanSuara(lanjut: () -> Unit) {
+    private fun mainkanSuara(berkasKhusus: java.io.File?, lanjut: () -> Unit) {
+        // 1. MP3 khusus aplikasi pengirim
+        if (berkasKhusus != null && berkasKhusus.exists() && berkasKhusus.length() > 0) {
+            if (putar(lanjut) { it.setDataSource(berkasKhusus.absolutePath) }) return
+        }
+
+        // 2. MP3 umum, atau 3. nada notifikasi HP
         val berkas = Pengaturan.fileSuara(context)
 
         if (Pengaturan.adaSuaraKustom(context)) {

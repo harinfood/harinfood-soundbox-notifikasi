@@ -21,6 +21,7 @@ class MainActivity : Activity() {
 
     companion object {
         private const val KODE_PILIH_MP3 = 101
+        private const val KODE_PILIH_SUARA_APP = 103
     }
 
     private lateinit var speaker: AmountSpeaker
@@ -36,6 +37,7 @@ class MainActivity : Activity() {
 
     private val dipilih = mutableSetOf<String>()
     private var dropdownBuka = false
+    private var pendingSuaraPkg: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,7 +141,7 @@ class MainActivity : Activity() {
             .sortedBy { it.label.lowercase() }
 
         dipilih.addAll(Pengaturan.paketDipantau(this))
-        adapter = AplikasiAdapter(this, daftar, dipilih) { simpanPilihan() }
+        adapter = AplikasiAdapter(this, daftar, dipilih, { simpanPilihan() }, { paket, label -> pilihSuaraApp(paket, label) })
         listAplikasi.adapter = adapter
         setupDaftarAplikasi()
         perbaruiRingkasan()
@@ -173,6 +175,40 @@ class MainActivity : Activity() {
         }
     }
 
+    /** Menu MP3 untuk satu aplikasi: pilih, ganti, atau kembali ke nada default. */
+    private fun pilihSuaraApp(paket: String, label: String) {
+        val pilihan = if (Pengaturan.adaSuaraApp(this, paket)) {
+            arrayOf("Ganti MP3", "Pakai nada default", "Batal")
+        } else {
+            arrayOf("Pilih MP3", "Batal")
+        }
+        android.app.AlertDialog.Builder(this)
+            .setTitle("MP3 untuk $label")
+            .setItems(pilihan) { _, i ->
+                when (pilihan[i]) {
+                    "Ganti MP3", "Pilih MP3" -> {
+                        pendingSuaraPkg = paket
+                        bukaPemilihSuaraApp()
+                    }
+                    "Pakai nada default" -> {
+                        Pengaturan.hapusSuaraApp(this, paket)
+                        adapter.notifyDataSetChanged()
+                        Toast.makeText(this, "$label memakai nada default", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .show()
+    }
+
+    private fun bukaPemilihSuaraApp() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "audio/*"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivityForResult(intent, KODE_PILIH_SUARA_APP)
+    }
+
     private fun bukaPemilihMp3() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -184,6 +220,17 @@ class MainActivity : Activity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == KODE_PILIH_SUARA_APP && resultCode == RESULT_OK) {
+            val uri = data?.data
+            val paket = pendingSuaraPkg
+            pendingSuaraPkg = null
+            if (uri != null && paket != null) {
+                val berhasil = Pengaturan.salinSuaraApp(this, paket, uri, namaFile(uri))
+                Toast.makeText(this, if (berhasil) "MP3 aplikasi tersimpan" else "Gagal menyalin MP3", Toast.LENGTH_SHORT).show()
+                adapter.notifyDataSetChanged()
+            }
+            return
+        }
         if (requestCode == KODE_PILIH_MP3 && resultCode == RESULT_OK) {
             val uri = data?.data ?: return
             val berhasil = Pengaturan.salinSuara(this, uri, namaFile(uri))

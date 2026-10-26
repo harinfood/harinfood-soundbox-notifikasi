@@ -85,6 +85,40 @@ object Pengaturan {
         }
     }
 
+    /** Folder MP3 per aplikasi. Nama berkas = nama paket aplikasi. */
+    fun fileSuaraApp(context: Context, paket: String): File {
+        val dir = File(context.filesDir, "suara_app")
+        if (!dir.exists()) dir.mkdirs()
+        return File(dir, "$paket.mp3")
+    }
+
+    fun adaSuaraApp(context: Context, paket: String): Boolean {
+        val berkas = fileSuaraApp(context, paket)
+        return berkas.exists() && berkas.length() > 0
+    }
+
+    fun namaSuaraApp(context: Context, paket: String): String? =
+        prefs(context).getString("suara_app_nama_$paket", null)
+
+    /** Menyalin MP3 pilihan untuk satu aplikasi. */
+    fun salinSuaraApp(context: Context, paket: String, uri: Uri, nama: String?): Boolean {
+        return try {
+            val masuk = context.contentResolver.openInputStream(uri) ?: return false
+            masuk.use { input ->
+                fileSuaraApp(context, paket).outputStream().use { output -> input.copyTo(output) }
+            }
+            prefs(context).edit().putString("suara_app_nama_$paket", nama ?: "file mp3").apply()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun hapusSuaraApp(context: Context, paket: String) {
+        fileSuaraApp(context, paket).delete()
+        prefs(context).edit().remove("suara_app_nama_$paket").apply()
+    }
+
     fun hapusSuara(context: Context) {
         fileSuara(context).delete()
         prefs(context).edit().remove(KUNCI_NAMA_SUARA).apply()

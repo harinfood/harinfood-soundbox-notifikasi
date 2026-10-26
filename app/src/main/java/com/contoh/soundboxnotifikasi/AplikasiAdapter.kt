@@ -19,12 +19,14 @@ data class AplikasiItem(val label: String, val paket: String)
 /**
  * Daftar aplikasi untuk ListView yang bisa digulir.
  * Aplikasi yang dipilih selalu di urutan paling atas, sisanya urut nama.
+ * Setiap aplikasi yang dipilih punya tombol MP3 sendiri (onSuara).
  */
 class AplikasiAdapter(
     private val context: Context,
     private val semua: List<AplikasiItem>,
     private val dipilih: MutableSet<String>,
-    private val onBerubah: () -> Unit
+    private val onBerubah: () -> Unit,
+    private val onSuara: (String, String) -> Unit
 ) : BaseAdapter() {
 
     private var kataSaring = ""
@@ -76,13 +78,24 @@ class AplikasiAdapter(
             layoutParams = LinearLayout.LayoutParams(ctx.dp(40), ctx.dp(40))
         }
 
-        val teks = TextView(ctx).apply {
-            text = item.label
-            textSize = 16f
-            setTextColor(Color.parseColor("#263238"))
+        val kolomTeks = LinearLayout(ctx).apply {
+            orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
                 marginStart = ctx.dp(14)
             }
+        }
+        kolomTeks.addView(TextView(ctx).apply {
+            text = item.label
+            textSize = 16f
+            setTextColor(Color.parseColor("#263238"))
+        })
+        if (terpilih) {
+            val namaMp3 = Pengaturan.namaSuaraApp(ctx, item.paket) ?: "nada default"
+            kolomTeks.addView(TextView(ctx).apply {
+                text = "MP3: $namaMp3"
+                textSize = 12f
+                setTextColor(Color.parseColor("#78909C"))
+            })
         }
 
         val cek = CheckBox(ctx).apply {
@@ -93,7 +106,23 @@ class AplikasiAdapter(
         }
 
         baris.addView(ikon)
-        baris.addView(teks)
+        baris.addView(kolomTeks)
+
+        if (terpilih) {
+            // Tombol MP3 khusus aplikasi ini (hanya untuk aplikasi yang dipilih)
+            baris.addView(ImageView(ctx).apply {
+                setImageResource(R.drawable.ic_musik)
+                imageTintList = ColorStateList.valueOf(Color.parseColor("#FB8C00"))
+                setBackgroundResource(R.drawable.bg_tombol_bulat)
+                setPadding(ctx.dp(8), ctx.dp(8), ctx.dp(8), ctx.dp(8))
+                layoutParams = LinearLayout.LayoutParams(ctx.dp(38), ctx.dp(38)).apply {
+                    marginEnd = ctx.dp(8)
+                }
+                isClickable = true
+                isFocusable = true
+                setOnClickListener { onSuara(item.paket, item.label) }
+            })
+        }
         baris.addView(cek)
 
         baris.setOnClickListener {
