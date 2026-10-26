@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
+import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +28,25 @@ class PengaturanNotifikasiActivity : Activity() {
         swLain.isChecked = Pengaturan.bacakanLainnya(this)
         swNama.setOnCheckedChangeListener { _, on -> Pengaturan.simpanBacakanNamaApp(this, on) }
         swLain.setOnCheckedChangeListener { _, on -> Pengaturan.simpanBacakanLainnya(this, on) }
+
+        val swVolume = findViewById<Switch>(R.id.swVolumeMaks)
+        val skBooster = findViewById<SeekBar>(R.id.skBooster)
+        val txtBooster = findViewById<TextView>(R.id.txtBooster)
+        swVolume.isChecked = Pengaturan.volumeMaksOtomatis(this)
+        swVolume.setOnCheckedChangeListener { _, on -> Pengaturan.simpanVolumeMaks(this, on) }
+        skBooster.progress = Pengaturan.boosterPersen(this)
+        txtBooster.text = "Booster suara: ${skBooster.progress}%"
+        skBooster.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(sb: SeekBar?, progress: Int, fromUser: Boolean) {
+                txtBooster.text = "Booster suara: $progress%"
+            }
+
+            override fun onStartTrackingTouch(sb: SeekBar?) {}
+
+            override fun onStopTrackingTouch(sb: SeekBar?) {
+                Pengaturan.simpanBoosterPersen(this@PengaturanNotifikasiActivity, skBooster.progress)
+            }
+        })
 
         txtJumlah = findViewById(R.id.txtJumlahKata)
         adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, daftarKata)

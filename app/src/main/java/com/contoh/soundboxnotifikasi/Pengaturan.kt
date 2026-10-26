@@ -119,6 +119,20 @@ object Pengaturan {
         prefs(context).edit().remove("suara_app_nama_$paket").apply()
     }
 
+    /** Naikkan volume notifikasi ke 100% saat berbunyi (default: ya). */
+    fun volumeMaksOtomatis(context: Context): Boolean = prefs(context).getBoolean("volume_maks", true)
+
+    fun simpanVolumeMaks(context: Context, nilai: Boolean) {
+        prefs(context).edit().putBoolean("volume_maks", nilai).apply()
+    }
+
+    /** Booster suara 0-100 (100 = penguatan +15 dB di atas batas volume HP). Default 70. */
+    fun boosterPersen(context: Context): Int = prefs(context).getInt("booster_persen", 70)
+
+    fun simpanBoosterPersen(context: Context, nilai: Int) {
+        prefs(context).edit().putInt("booster_persen", nilai.coerceIn(0, 100)).apply()
+    }
+
     fun hapusSuara(context: Context) {
         fileSuara(context).delete()
         prefs(context).edit().remove(KUNCI_NAMA_SUARA).apply()

@@ -57,6 +57,54 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:background="@drawable/bg_kartu"
+        android:elevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Volume"
+            android:textColor="#263238"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Switch
+            android:id="@+id/swVolumeMaks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Volume notifikasi 100% saat berbunyi"
+            android:textColor="#263238"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/txtBooster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:textColor="#263238"
+            android:textSize="15sp" />
+
+        <SeekBar
+            android:id="@+id/skBooster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Booster menaikkan suara MP3 dan TTS di atas batas volume HP. Jika suara terdengar pecah, turunkan nilainya."
+            android:textColor="#78909C"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
