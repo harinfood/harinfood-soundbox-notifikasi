@@ -175,20 +175,32 @@ class MainActivity : Activity() {
         }
     }
 
-    /** Menu MP3 untuk satu aplikasi: pilih, ganti, atau kembali ke nada default. */
+    /** Menu MP3 untuk satu aplikasi: pilih/ganti, bisukan (hanya TTS), atau kembali ke nada default. */
     private fun pilihSuaraApp(paket: String, label: String) {
-        val pilihan = if (Pengaturan.adaSuaraApp(this, paket)) {
-            arrayOf("Ganti MP3", "Pakai nada default", "Batal")
-        } else {
-            arrayOf("Pilih MP3", "Batal")
-        }
+        val ada = Pengaturan.adaSuaraApp(this, paket)
+        val bisu = Pengaturan.appBisu(this, paket)
+        val pilihan = mutableListOf<String>()
+        pilihan.add(if (ada) "Ganti MP3" else "Pilih MP3")
+        pilihan.add(if (bisu) "Aktifkan MP3" else "Bisukan MP3 (hanya TTS)")
+        if (ada) pilihan.add("Pakai nada default")
+        pilihan.add("Batal")
         android.app.AlertDialog.Builder(this)
             .setTitle("MP3 untuk $label")
-            .setItems(pilihan) { _, i ->
+            .setItems(pilihan.toTypedArray()) { _, i ->
                 when (pilihan[i]) {
                     "Ganti MP3", "Pilih MP3" -> {
                         pendingSuaraPkg = paket
                         bukaPemilihSuaraApp()
+                    }
+                    "Bisukan MP3 (hanya TTS)" -> {
+                        Pengaturan.simpanAppBisu(this, paket, true)
+                        adapter.notifyDataSetChanged()
+                        Toast.makeText(this, "$label: MP3 dibisukan, hanya TTS", Toast.LENGTH_SHORT).show()
+                    }
+                    "Aktifkan MP3" -> {
+                        Pengaturan.simpanAppBisu(this, paket, false)
+                        adapter.notifyDataSetChanged()
+                        Toast.makeText(this, "$label: MP3 diaktifkan", Toast.LENGTH_SHORT).show()
                     }
                     "Pakai nada default" -> {
                         Pengaturan.hapusSuaraApp(this, paket)
@@ -226,6 +238,7 @@ class MainActivity : Activity() {
             pendingSuaraPkg = null
             if (uri != null && paket != null) {
                 val berhasil = Pengaturan.salinSuaraApp(this, paket, uri, namaFile(uri))
+                if (berhasil) Pengaturan.simpanAppBisu(this, paket, false)
                 Toast.makeText(this, if (berhasil) "MP3 aplikasi tersimpan" else "Gagal menyalin MP3", Toast.LENGTH_SHORT).show()
                 adapter.notifyDataSetChanged()
             }

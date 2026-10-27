@@ -36,7 +36,7 @@ class AmountSpeaker(private val context: Context) {
         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
         .build()
 
-    private class Job(val kata: String, val berkasKhusus: File?)
+    private class Job(val kata: String, val berkasKhusus: File?, val lewatMp3: Boolean)
 
     private var tts: TextToSpeech? = null
     private var siap = false
@@ -87,10 +87,10 @@ class AmountSpeaker(private val context: Context) {
 
     fun ucapkan(kata: String) = ucapkan(kata, null)
 
-    /** berkasKhusus = MP3 milik aplikasi pengirim (jika ada). */
-    fun ucapkan(kata: String, berkasKhusus: File?) {
+    /** berkasKhusus = MP3 milik aplikasi pengirim (jika ada). lewatMp3 = true hanya membacakan TTS. */
+    fun ucapkan(kata: String, berkasKhusus: File?, lewatMp3: Boolean = false) {
         handler.post {
-            antrean.addLast(Job(kata, berkasKhusus))
+            antrean.addLast(Job(kata, berkasKhusus, lewatMp3))
             if (!sedangJalan) lanjutkan()
         }
     }
@@ -104,7 +104,7 @@ class AmountSpeaker(private val context: Context) {
         }
         sedangJalan = true
         aturVolumeMaks()
-        mainkanMp3(job.berkasKhusus) { bacakan(job.kata) }
+        mainkanMp3(job.berkasKhusus, job.lewatMp3) { bacakan(job.kata) }
     }
 
     private fun jobSelesai() {
@@ -112,7 +112,11 @@ class AmountSpeaker(private val context: Context) {
         lanjutkan()
     }
 
-    private fun mainkanMp3(berkasKhusus: File?, lanjut: () -> Unit) {
+    private fun mainkanMp3(berkasKhusus: File?, lewatMp3: Boolean, lanjut: () -> Unit) {
+        if (lewatMp3) {
+            lanjut()
+            return
+        }
         val berkas = when {
             berkasKhusus != null && berkasKhusus.exists() && berkasKhusus.length() > 0 -> berkasKhusus
             Pengaturan.adaSuaraKustom(context) -> Pengaturan.fileSuara(context)

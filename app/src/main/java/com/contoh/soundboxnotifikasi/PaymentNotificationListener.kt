@@ -73,12 +73,13 @@ class PaymentNotificationListener : NotificationListenerService() {
         if (idTerbaca.size > MAKS_ID_DIINGAT) idTerbaca.remove(idTerbaca.first())
 
         val penyiar = speaker ?: AmountSpeaker(applicationContext).also { speaker = it }
-        val berkasKhusus = if (Pengaturan.adaSuaraApp(this, sbn.packageName)) {
+        val bisu = Pengaturan.appBisu(this, sbn.packageName)
+        val berkasKhusus = if (!bisu && Pengaturan.adaSuaraApp(this, sbn.packageName)) {
             Pengaturan.fileSuaraApp(this, sbn.packageName)
         } else {
             null
         }
-        penyiar.ucapkan(kalimat, berkasKhusus)
+        penyiar.ucapkan(kalimat, berkasKhusus, bisu)
     }
 
     /** Nama aplikasi yang mengirim notifikasi, misalnya "ShopeePay". */

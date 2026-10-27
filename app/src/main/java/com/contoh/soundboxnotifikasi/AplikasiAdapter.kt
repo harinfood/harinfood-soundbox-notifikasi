@@ -90,9 +90,10 @@ class AplikasiAdapter(
             setTextColor(Color.parseColor("#263238"))
         })
         if (terpilih) {
+            val bisu = Pengaturan.appBisu(ctx, item.paket)
             val namaMp3 = Pengaturan.namaSuaraApp(ctx, item.paket) ?: "nada default"
             kolomTeks.addView(TextView(ctx).apply {
-                text = "MP3: $namaMp3"
+                text = if (bisu) "MP3 dibisukan, hanya TTS" else "MP3: $namaMp3"
                 textSize = 12f
                 setTextColor(Color.parseColor("#78909C"))
             })
@@ -112,7 +113,10 @@ class AplikasiAdapter(
             // Tombol MP3 khusus aplikasi ini (hanya untuk aplikasi yang dipilih)
             baris.addView(ImageView(ctx).apply {
                 setImageResource(R.drawable.ic_musik)
-                imageTintList = ColorStateList.valueOf(Color.parseColor("#FB8C00"))
+                imageTintList = ColorStateList.valueOf(
+                    if (Pengaturan.appBisu(ctx, item.paket)) Color.parseColor("#90A4AE")
+                    else Color.parseColor("#FB8C00")
+                )
                 setBackgroundResource(R.drawable.bg_tombol_bulat)
                 setPadding(ctx.dp(8), ctx.dp(8), ctx.dp(8), ctx.dp(8))
                 layoutParams = LinearLayout.LayoutParams(ctx.dp(38), ctx.dp(38)).apply {

@@ -125,6 +125,14 @@ object Pengaturan {
         }
     }
 
+    /** Bisukan MP3 untuk aplikasi ini: notifikasinya hanya dibacakan TTS. */
+    fun appBisu(context: Context, paket: String): Boolean =
+        prefs(context).getBoolean("bisu_$paket", false)
+
+    fun simpanAppBisu(context: Context, paket: String, bisu: Boolean) {
+        prefs(context).edit().putBoolean("bisu_$paket", bisu).apply()
+    }
+
     fun hapusSuaraApp(context: Context, paket: String) {
         fileSuaraApp(context, paket).delete()
         prefs(context).edit().remove("suara_app_nama_$paket").apply()
