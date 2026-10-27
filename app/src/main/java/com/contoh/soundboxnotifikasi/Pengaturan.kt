@@ -55,6 +55,17 @@ object Pengaturan {
         prefs(context).edit().putStringSet(KUNCI_KATA_BLOKIR, baru).apply()
     }
 
+    /** Mengganti seluruh daftar kata blokir (dipakai saat pulihkan CSV). */
+    fun gantiKataBlokir(context: Context, kata: Collection<String>) {
+        val bersih = kata.map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet()
+        prefs(context).edit().putStringSet(KUNCI_KATA_BLOKIR, bersih).apply()
+    }
+
+    /** Menggabungkan kata baru ke daftar yang sudah ada. */
+    fun gabungKataBlokir(context: Context, kata: Collection<String>) {
+        gantiKataBlokir(context, kataBlokir(context) + kata)
+    }
+
     /** Salinan mp3 di penyimpanan internal aplikasi. */
     fun fileSuara(context: Context): File = File(context.filesDir, NAMA_SALINAN)
 

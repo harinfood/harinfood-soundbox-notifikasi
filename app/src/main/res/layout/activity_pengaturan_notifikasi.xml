@@ -14,6 +14,17 @@
         android:textSize="22sp"
         android:textStyle="bold" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -105,8 +116,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="16dp"
         android:padding="16dp"
@@ -162,16 +172,47 @@
             android:textColor="#78909C"
             android:textSize="12sp" />
 
-        <ListView
-            android:id="@+id/listKataBlokir"
+        <com.contoh.soundboxnotifikasi.FlowLayout
+            android:id="@+id/wadahKata"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btnBackupKata"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Backup CSV"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnPulihKata"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Pulihkan CSV"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:divider="#E0E0E0"
-            android:dividerHeight="1dp" />
+            android:text="Backup membuat file CSV yang bisa dibuka dan diedit di Microsoft Excel. Kata ada di kolom pertama, satu kata per baris."
+            android:textColor="#78909C"
+            android:textSize="12sp" />
     </LinearLayout>
 
+    </LinearLayout>
+    </ScrollView>
     <Button
         android:id="@+id/btnKembaliNotif"
         android:layout_width="match_parent"

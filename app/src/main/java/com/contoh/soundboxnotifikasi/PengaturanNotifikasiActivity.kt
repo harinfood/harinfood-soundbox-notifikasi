@@ -2,11 +2,12 @@ package com.contoh.soundboxnotifikasi
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ListView
 import android.widget.SeekBar
 import android.widget.Switch
 import android.widget.TextView
@@ -14,7 +15,12 @@ import android.widget.Toast
 
 class PengaturanNotifikasiActivity : Activity() {
 
-    private lateinit var adapter: ArrayAdapter<String>
+    companion object {
+        private const val KODE_BACKUP = 301
+        private const val KODE_PULIH = 302
+    }
+
+    private lateinit var wadahKata: FlowLayout
     private lateinit var txtJumlah: TextView
     private val daftarKata = mutableListOf<String>()
 
@@ -49,27 +55,41 @@ class PengaturanNotifikasiActivity : Activity() {
         })
 
         txtJumlah = findViewById(R.id.txtJumlahKata)
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, daftarKata)
-        val list = findViewById<ListView>(R.id.listKataBlokir)
-        list.adapter = adapter
-        list.setOnItemClickListener { _, _, posisi, _ -> konfirmasiHapus(daftarKata[posisi]) }
+        wadahKata = findViewById(R.id.wadahKata)
 
         findViewById<Button>(R.id.btnTambahKata).setOnClickListener { tambahKata() }
+        findViewById<Button>(R.id.btnBackupKata).setOnClickListener { bukaBackup() }
+        findViewById<Button>(R.id.btnPulihKata).setOnClickListener { bukaPulih() }
         findViewById<Button>(R.id.btnKembaliNotif).setOnClickListener { finish() }
 
         muatKata()
     }
 
+    /** Semua kata ditampilkan sebagai chip yang berpindah baris. */
     private fun muatKata() {
         daftarKata.clear()
         daftarKata.addAll(Pengaturan.kataBlokir(this).sorted())
-        adapter.notifyDataSetChanged()
+        wadahKata.removeAllViews()
+        val padH = dp(12)
+        val padV = dp(7)
+        for (kata in daftarKata) {
+            val chip = TextView(this)
+            chip.text = "$kata  ×"
+            chip.textSize = 14f
+            chip.setTextColor(Color.parseColor("#E65100"))
+            chip.background = getDrawable(R.drawable.bg_chip)
+            chip.setPadding(padH, padV, padH, padV)
+            chip.setOnClickListener { konfirmasiHapus(kata) }
+            wadahKata.addView(chip)
+        }
         txtJumlah.text = if (daftarKata.isEmpty()) {
             "Belum ada kata yang diblokir."
         } else {
             "${daftarKata.size} kata diblokir. Ketuk kata untuk menghapus."
         }
     }
+
+    private fun dp(v: Int): Int = (v * resources.displayMetrics.density).toInt()
 
     private fun tambahKata() {
         val input = findViewById<EditText>(R.id.edtKataBlokir)
@@ -96,6 +116,89 @@ class PengaturanNotifikasiActivity : Activity() {
                 muatKata()
             }
             .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    // ---------- Backup & pulihkan CSV ----------
+
+    private fun bukaBackup() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "text/csv"
+            putExtra(Intent.EXTRA_TITLE, "kata_blokir_harinfood.csv")
+        }
+        startActivityForResult(intent, KODE_BACKUP)
+    }
+
+    private fun bukaPulih() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+            putExtra(
+                Intent.EXTRA_MIME_TYPES,
+                arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain", "application/vnd.ms-excel")
+            )
+        }
+        startActivityForResult(intent, KODE_PULIH)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != RESULT_OK) return
+        val uri = data?.data ?: return
+        when (requestCode) {
+            KODE_BACKUP -> simpanBackup(uri)
+            KODE_PULIH -> konfirmasiPulih(uri)
+        }
+    }
+
+    private fun simpanBackup(uri: Uri) {
+        try {
+            val daftar = Pengaturan.kataBlokir(this)
+            val isi = KataBlokirCsv.buat(daftar)
+            val tulis = contentResolver.openOutputStream(uri)
+            if (tulis == null) {
+                Toast.makeText(this, "Gagal membuka file tujuan", Toast.LENGTH_SHORT).show()
+                return
+            }
+            tulis.use { it.write(isi.toByteArray(Charsets.UTF_8)) }
+            Toast.makeText(this, "Backup tersimpan: ${daftar.size} kata", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Backup gagal: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun konfirmasiPulih(uri: Uri) {
+        val isi = try {
+            contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
+        } catch (e: Exception) {
+            null
+        }
+        if (isi == null) {
+            Toast.makeText(this, "Gagal membaca file", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val daftarBaru = KataBlokirCsv.baca(isi)
+        if (daftarBaru.isEmpty()) {
+            Toast.makeText(this, "File tidak berisi kata", Toast.LENGTH_SHORT).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Pulihkan ${daftarBaru.size} kata?")
+            .setItems(arrayOf("Gabung dengan daftar sekarang", "Ganti seluruh daftar", "Batal")) { _, pilihan ->
+                when (pilihan) {
+                    0 -> {
+                        Pengaturan.gabungKataBlokir(this, daftarBaru)
+                        Toast.makeText(this, "Kata berhasil digabung", Toast.LENGTH_SHORT).show()
+                        muatKata()
+                    }
+                    1 -> {
+                        Pengaturan.gantiKataBlokir(this, daftarBaru)
+                        Toast.makeText(this, "Daftar diganti dengan ${daftarBaru.size} kata", Toast.LENGTH_SHORT).show()
+                        muatKata()
+                    }
+                }
+            }
             .show()
     }
 }
